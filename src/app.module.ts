@@ -11,6 +11,7 @@ import { ContentGeneratorModule } from './modules/content-generator/content-gene
 
 import environment from './common/configs/environment';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ArticlesModule } from './modules/articles/articles.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -43,6 +44,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     }),
     ScraperModule,
     ContentGeneratorModule,
+    ArticlesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

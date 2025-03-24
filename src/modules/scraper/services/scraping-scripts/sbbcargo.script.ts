@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
+import { ArticleType } from 'src/models/articles.models';
 
 //**/ NOTE: "sbbcargo.com/" SCRAPPING SCRIPT
 //! NOTE : COMPLETED
@@ -16,7 +17,7 @@ export async function getAllSbbCargoArticles() {
 
   for (let index = 1; index < PAGES_COUNT; index++) {
     console.log(`Scraping page ${index}...`);
-    const teaserArticles = await page.evaluate(() => {
+    const teaserArticles = await page.evaluate((articleType) => {
       return Array.from(document.querySelectorAll('.mod_socialitem')).map((article) => {
         const url = article?.querySelector('.mod_socialitem_link')?.getAttribute('href');
         const title = article.querySelector('.mod_socialitem_publisher') as HTMLElement;
@@ -24,17 +25,19 @@ export async function getAllSbbCargoArticles() {
         const date = article.querySelector('.mod_socialitem_date') as HTMLElement;
 
         const imageElement = article.querySelector('.mod_image_inner_wrapper > img');
-        const image = imageElement ? imageElement.getAttribute('src') : '';
+        const image = imageElement ? imageElement.getAttribute('data-src') : '';
 
         return {
+          baseUrl: window.location.href,
+          type: articleType,
           title: title?.innerText?.trim() || 'N/A',
-          url: `${url}` || 'N/A',
-          date: date?.innerText.trim() || 'N/A',
-          description: description.innerText?.trim() || 'N/A',
-          image: `${image}` || 'N/A',
+          url: url ? `${url}` : 'N/A',
+          dateText: date?.innerText.trim() || 'N/A',
+          originalContent: description.innerText?.trim() || 'N/A',
+          image: image ? `${image}` : 'N/A',
         };
       });
-    });
+    }, ArticleType.News);
 
     articles.push(...teaserArticles);
 

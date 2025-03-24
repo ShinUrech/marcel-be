@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
+import { ArticleType } from 'src/models/articles.models';
 
 //**/ NOTE: "alstom.com/" SCRAPPING SCRIPT
 export async function getAllAlstomArticles() {
@@ -13,11 +14,11 @@ export async function getAllAlstomArticles() {
 
   let pageCount = 1;
 
-  const PAGES_COUNT = 20;
+  const PAGES_COUNT = 3;
 
   for (let index = 1; index < PAGES_COUNT; index++) {
     console.log(`Scraping page ${pageCount}...`);
-    const teaserArticles = await page.evaluate(() => {
+    const teaserArticles = await page.evaluate((articleType) => {
       return Array.from(
         document.querySelectorAll('.cards__item.cards__item--full > .cards__item.cards__item--full'),
       ).map((article) => {
@@ -29,14 +30,16 @@ export async function getAllAlstomArticles() {
         const image = imageElement ? imageElement.getAttribute('src') : '';
 
         return {
+          baseUrl: window.location.href,
+          type: articleType,
           title: title?.innerText?.trim() || 'N/A',
-          url: `https://www.alstom.com/${url}` || 'N/A',
-          date: date?.innerText.trim() || 'N/A',
-          description: 'N/A',
-          image: `https://www.alstom.com/${image}` || 'N/A',
+          url: url ? `https://www.alstom.com/${url}` : 'N/A',
+          dateText: date?.innerText.trim() || 'N/A',
+          teaser: 'N/A',
+          image: image ? `https://www.alstom.com/${image}` : 'N/A',
         };
       });
-    });
+    }, ArticleType.News);
 
     articles.push(...teaserArticles);
 
@@ -52,4 +55,21 @@ export async function getAllAlstomArticles() {
 
   await browser.close();
   return articles;
+}
+
+export async function getAlstomArticle(pageUrl: string) {
+  const { browser, page } = await getPuppeteerInstance();
+
+  await page.goto(pageUrl, { waitUntil: 'networkidle2' });
+
+  const originalArticle = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll('#block-alstom-contenudelapageprincipale > div.content section')).map(
+      (article: HTMLElement) => {
+        return article.innerText;
+      },
+    );
+  });
+
+  await browser.close();
+  return originalArticle.join();
 }

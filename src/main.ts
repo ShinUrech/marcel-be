@@ -11,6 +11,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get<ConfigService>(ConfigService);
 
+  // Enable Cors
+  app.enableCors();
+
   // Getting the Winston logger
   const logger = app.get(WINSTON_MODULE_NEST_PROVIDER);
   const httpAdapterHost = app.get(HttpAdapterHost);

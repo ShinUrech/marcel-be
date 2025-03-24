@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
+import { ArticleType } from 'src/models/articles.models';
 
 //**/ NOTE: "rbs.ch/" SCRAPPING SCRIPT
 export async function getAllRbslArticles() {
@@ -12,11 +13,11 @@ export async function getAllRbslArticles() {
   const articles = [];
   let pageCount = 1;
 
-  const PAGES_COUNT = 3;
+  const PAGES_COUNT = 2;
 
   for (let index = 1; index < PAGES_COUNT; index++) {
     console.log(`Scraping page ${pageCount}...`);
-    const teaserArticles = await page.evaluate(() => {
+    const teaserArticles = await page.evaluate((articleType) => {
       return Array.from(document.querySelectorAll('#block-rbs-content .view-content .views-row')).map((article) => {
         const url = article.querySelector('.field-name-node-title h2 a')?.getAttribute('href');
         const title = article.querySelector('.field-name-node-title h2 a') as HTMLElement;
@@ -27,14 +28,16 @@ export async function getAllRbslArticles() {
         const image = imageElement ? imageElement.getAttribute('src') : '';
 
         return {
+          baseUrl: window.location.href,
+          type: articleType,
           title: title?.innerText?.trim() || 'N/A',
-          url: `https://www.rbs.ch/${url}` || 'N/A',
-          date: date?.innerText.trim() || 'N/A',
-          description: description.innerText.trim() || 'N/A',
-          image: `https://www.rbs.ch/${image}` || 'N/A',
+          url: url ? `https://www.rbs.ch/${url}` : 'N/A',
+          dateText: date?.innerText.trim() || 'N/A',
+          teaser: description.innerText.trim() || 'N/A',
+          image: image ? `https://www.rbs.ch/${image}` : 'N/A',
         };
       });
-    });
+    }, ArticleType.News);
 
     articles.push(...teaserArticles);
 
@@ -50,4 +53,21 @@ export async function getAllRbslArticles() {
 
   await browser.close();
   return articles;
+}
+
+export async function getRbslArticle(pageUrl: string) {
+  const { browser, page } = await getPuppeteerInstance();
+
+  await page.goto(pageUrl, { waitUntil: 'networkidle2' });
+
+  const originalArticle = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll('#main-page-container > main > div > div.layout-content')).map(
+      (article: HTMLElement) => {
+        return article.innerText;
+      },
+    );
+  });
+
+  await browser.close();
+  return originalArticle.join();
 }

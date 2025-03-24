@@ -1,24 +1,23 @@
 /* eslint-disable prettier/prettier */
 import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
+import { ArticleType } from 'src/models/articles.models';
 
 //**/ NOTE: "linkedIn POST" SCRAPPING SCRIPT
-export async function getAllLinkedInArticles() {
-  const cookies = [
-    {
-      name: 'li_at',
-      value:
-        'AQEDAVVJnOIDt_qAAAABlUQtaV8AAAGVaDntX04AMB0OE07mKehb5VAZ5uX5Rme7BCaxPXHAkGuOVxh0mz1g3egk1FqWiZv3mzzjuVyMV-sLxWweHEiPeqPX3uIzmoDl2xmnsim9KeCQSEeYed9ppEu0',
-      domain: '.linkedin.com',
-    },
-  ];
-  const { browser, page } = await getPuppeteerInstance(cookies);
+export async function getAllLinkedInArticles(companyName: string) {
+  const { browser, page } = await getPuppeteerInstance();
 
-  // Navigate to the company's LinkedIn page
-  // await page.goto('https://www.linkedin.com/company/railcare-ag/posts/'); // Replace with the actual company page URL
+  // Navigate to LinkedIn login page
+  await page.goto(`https://www.linkedin.com/company/${companyName}/posts/`, { waitUntil: 'networkidle2' });
 
-  // Navigate to the company's LinkedIn posts page
-  const companyUrl = 'https://www.linkedin.com/company/microsoft/posts/';
-  await page.goto(companyUrl, { waitUntil: 'networkidle2', timeout: 60000 });
+  // Type in username and password
+  await page.type('#username', 'yourdream1991@gmail.com', { delay: 100 });
+  await page.type('#password', 'Sjymx361*', { delay: 100 });
+
+  // Click on the login button
+  await page.click('button[type="submit"]');
+
+  // Wait for navigation to complete
+  await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 180000 });
 
   let prevHeight = 0;
   while (true) {
@@ -28,24 +27,43 @@ export async function getAllLinkedInArticles() {
     await new Promise((resolve) => setTimeout(resolve, 2000));
     prevHeight = newHeight;
 
-    if (prevHeight > 5000) break;
+    if (prevHeight > 20000) break;
   }
 
   // Scrape posts
-  const posts = await page.evaluate(() => {
-    const postElements = document.querySelectorAll('.feed-shared-update-v2'); // Selects posts
-    return Array.from(postElements).map((post) => {
-      const textElement = post.querySelector('.feed-shared-update-v2__description') as HTMLElement;
-      const imgElement = post.querySelector('img');
-      const dateElement = post.querySelector('span.t-12') as HTMLElement;
+  const posts = await page.evaluate(
+    (articleType, companyName) => {
+      const postElements = document.querySelectorAll('.feed-shared-update-v2'); // Selects posts
+      return Array.from(postElements).map((post) => {
+        const textElement = post.querySelector('.feed-shared-update-v2__description') as HTMLElement;
+        const imgElement =
+          post.querySelector('img.update-components-article__image') ||
+          post.querySelector('img.update-components-image__image');
 
-      return {
-        text: textElement ? textElement.innerText.trim() : null,
-        img: imgElement ? imgElement.src : null,
-        date: dateElement ? dateElement.innerText.trim() : null,
-      };
-    });
-  });
+        const companyImgElement = post.querySelector('img');
+
+        const dateElement = post.querySelector('.update-components-actor__sub-description > span') as HTMLElement;
+        return {
+          baseUrl: window.location.href,
+          type: articleType,
+          dateText: dateElement
+            ? dateElement.innerText
+                .replace(/\•/g, '')
+                .replace(/\Modifié/g, '')
+                .trim()
+            : 'N/A',
+          originalContent: textElement ? textElement.innerHTML.trim() : 'N/A',
+          image: imgElement ? imgElement?.getAttribute('src') : 'N/A',
+          metadata: {
+            icon: companyImgElement ? companyImgElement?.getAttribute('src') : 'N/A',
+            source: companyName,
+          },
+        };
+      });
+    },
+    ArticleType.LinkedIn,
+    companyName,
+  );
 
   await browser.close();
 

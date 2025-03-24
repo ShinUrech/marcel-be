@@ -7,9 +7,9 @@ export class CreateArticleDto {
   @IsString()
   baseUrl: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  url: string;
+  url?: string;
 
   @IsOptional()
   @IsString()
@@ -23,7 +23,7 @@ export class CreateArticleDto {
   @IsString()
   teaser?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   image: string;
 

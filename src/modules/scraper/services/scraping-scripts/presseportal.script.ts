@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
+import { ArticleType } from 'src/models/articles.models';
 
 //**/ NOTE: "presseportal.ch/" SCRAPPING SCRIPT
 export async function getAllPressEportalArticles() {
@@ -11,11 +12,11 @@ export async function getAllPressEportalArticles() {
 
   const articles = [];
   let pageCount = 1;
-
+  const PAGES_COUNT = 1;
   while (true) {
     console.log(`Scraping page ${pageCount}...`);
 
-    const teaserArticles = await page.evaluate(() => {
+    const teaserArticles = await page.evaluate((articleType) => {
       return Array.from(document.querySelectorAll('main ul.article-list article')).map((article) => {
         const url = article.querySelector('h3 > a')?.getAttribute('href');
         const title = article.querySelector('h3 > a') as HTMLElement;
@@ -27,14 +28,16 @@ export async function getAllPressEportalArticles() {
         const image = imageElement ? imageElement.getAttribute('src') : '';
 
         return {
+          baseUrl: window.location.href,
+          type: articleType,
           title: title?.innerText?.trim() || 'N/A',
           url: url || 'N/A',
-          date: date?.innerText.trim() || 'N/A',
-          description: description?.innerText.trim() || 'N/A',
+          dateText: date?.innerText.trim() || 'N/A',
+          teaser: description?.innerText.trim() || 'N/A',
           image: image || 'N/A',
         };
       });
-    });
+    }, ArticleType.News);
 
     articles.push(...teaserArticles);
 
@@ -45,6 +48,10 @@ export async function getAllPressEportalArticles() {
 
     if (!nextButton) {
       console.log('No more pages. Exiting...');
+      break;
+    }
+
+    if (pageCount >= PAGES_COUNT) {
       break;
     }
 
@@ -77,7 +84,7 @@ export async function getAllPressePortalEmArticles() {
 
   for (let index = 1; index < PAGES_COUNT; index++) {
     console.log(`Scraping page ${pageCount}...`);
-    const teaserArticles = await page.evaluate(() => {
+    const teaserArticles = await page.evaluate((articleType) => {
       return Array.from(document.querySelectorAll('.article-link')).map((article) => {
         const url = article?.getAttribute('href');
         const title = article.querySelector('.article__title') as HTMLElement;
@@ -96,14 +103,16 @@ export async function getAllPressePortalEmArticles() {
         }
 
         return {
+          baseUrl: window.location.href,
+          type: articleType,
           title: title?.innerText?.trim() || titleSub?.innerText?.trim() || 'N/A',
-          url: `${url}` || 'N/A',
-          date: date?.innerText?.trim() || 'N/A',
-          description: 'N/A',
-          image: `${imageUrl}` || 'N/A',
+          url: url ? `${url}` : 'N/A',
+          dateText: date?.innerText?.trim() || 'N/A',
+          teaser: 'N/A',
+          image: imageUrl ? `${imageUrl}` : 'N/A',
         };
       });
-    });
+    }, ArticleType.News);
 
     articles.push(...teaserArticles);
 
@@ -119,4 +128,34 @@ export async function getAllPressePortalEmArticles() {
 
   await browser.close();
   return articles;
+}
+
+export async function getPressEportalArticle(pageUrl: string) {
+  const { browser, page } = await getPuppeteerInstance();
+
+  await page.goto(pageUrl, { waitUntil: 'networkidle2' });
+
+  const originalArticle = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll('body > main article > .card')).map((article: HTMLElement) => {
+      return article.textContent;
+    });
+  });
+
+  await browser.close();
+  return originalArticle.join();
+}
+
+export async function getPressePortalAdArticle(pageUrl: string) {
+  const { browser, page } = await getPuppeteerInstance();
+
+  await page.goto(pageUrl, { waitUntil: 'networkidle2' });
+
+  const originalArticle = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll('#main article > div.article__body')).map((article: HTMLElement) => {
+      return article.innerText;
+    });
+  });
+
+  await browser.close();
+  return originalArticle.join();
 }

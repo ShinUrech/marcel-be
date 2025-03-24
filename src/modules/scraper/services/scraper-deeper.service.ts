@@ -1,6 +1,35 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import puppeteer from 'puppeteer';
+import { getRoalpsArticle } from './scraping-scripts/roalps.script';
+import { getSevOnlineArticle } from './scraping-scripts/sev-online.script';
+import { getOtifArticle } from './scraping-scripts/otif.script';
+import { getCitrapArticle } from './scraping-scripts/citrap-vaud.script';
+import { getBernmobilArticle } from './scraping-scripts/bernmobil.script';
+import { getBahnberufeArticle } from './scraping-scripts/bahnberufe.script';
+import { getLokReportArticle } from './scraping-scripts/lok-report.script';
+import { getRailMarketArticle } from './scraping-scripts/railmarket.script';
+import { getBaublattArticle } from './scraping-scripts/baublatt.script';
+import { getProBahnArticle } from './scraping-scripts/pro-bahn.script';
+import { getPressePortalAdArticle, getPressEportalArticle } from './scraping-scripts/presseportal.script';
+import { getBahnBlogArticle } from './scraping-scripts/bahnblogstelle.script';
+import { getHupacArticle } from './scraping-scripts/hupac.script';
+import { getDoppelArticle } from './scraping-scripts/doppelmayr.script';
+import { getAarglArticle } from './scraping-scripts/aargauverkehr.script';
+import { getRbslArticle } from './scraping-scripts/rbs.script';
+import { getCstlArticle } from './scraping-scripts/cst.script';
+import { getCarGorailArticle } from './scraping-scripts/cargorail.script';
+import { getZentralBahnArticle } from './scraping-scripts/zentralbahn.script';
+import { getStadtArticle } from './scraping-scripts/stadt-zuerich.script';
+import { getZvvArticle } from './scraping-scripts/zvv.script';
+import { getAlstomArticle } from './scraping-scripts/alstom.script';
+import { getAbbArticle } from './scraping-scripts/abb.script';
+import { getRhombergArticle } from './scraping-scripts/rhomberg-sersa.script';
+import { getBlsArticle } from './scraping-scripts/bls.script';
+import { getMuellerFrauenNewsArticle } from './scraping-scripts/mueller-frauenfeld.script';
+import { getCVanoliArticle } from './scraping-scripts/c-vanoli.script';
+import { getRhbProjectArticle } from './scraping-scripts/rhb.script';
+import { getSobArticle } from './scraping-scripts/sob.script';
 
 @Injectable()
 export class ScraperDeeperService {
@@ -15,507 +44,129 @@ export class ScraperDeeperService {
 
   //**/ NOTE: "roalps.ch" SCRAPPING SCRIPT
   async getRoalpsArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#main > section .section__content')).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getRoalpsArticle(pageUrl);
   }
 
   //**/ NOTE: "roalps.ch" SCRAPPING SCRIPT
   async getSevOnlineArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(
-        document.querySelectorAll('body > div.wrapper > div > div > div.main-content > div.content.block.cf > article'),
-      ).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getSevOnlineArticle(pageUrl);
   }
 
   //**/ NOTE: "roalps.ch" SCRAPPING SCRIPT
   // TODO: NOT FINISH
   async getOtifArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('[data-element_type="container"]')).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getOtifArticle(pageUrl);
   }
 
   //**/ NOTE: "roalps.ch" SCRAPPING SCRIPT
   async getCitrapArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#content > article')).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getCitrapArticle(pageUrl);
   }
 
   //**/ NOTE: "roalps.ch" SCRAPPING SCRIPT
   async getBernmobilArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#content > section > article')).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getBernmobilArticle(pageUrl);
   }
 
   //**/ NOTE: "roalps.ch" SCRAPPING SCRIPT
   async getBahnberufeArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#page-wrapper > div.container-fluid')).map(
-        (article: HTMLElement) => {
-          return article.innerText;
-        },
-      );
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getBahnberufeArticle(pageUrl);
   }
 
   //**/ NOTE: "roalps.ch" SCRAPPING SCRIPT
   async getLokReportArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#k2Container')).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getLokReportArticle(pageUrl);
   }
 
-  async getLokRailMarketArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(
-        document.querySelectorAll(
-          '#content > div > div.container.space-bottom-1 > div > div.col-12.col-lg-8.mb-5.mb-lg-0',
-        ),
-      ).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+  async getRailMarketArticle(pageUrl: string) {
+    return getRailMarketArticle(pageUrl);
   }
 
   async getBaublattArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#app article.article:not(.article-item)')).map(
-        (article: HTMLElement) => {
-          return article.textContent;
-        },
-      );
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getBaublattArticle(pageUrl);
   }
 
   async getProBahnArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#content')).map((article: HTMLElement) => {
-        return article.textContent;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getProBahnArticle(pageUrl);
   }
 
   async getPressEportalArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('body > main article > .card')).map((article: HTMLElement) => {
-        return article.textContent;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getPressEportalArticle(pageUrl);
   }
 
   async getBahnBlogArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#main > div.post.type-post')).map((article: HTMLElement) => {
-        return article.textContent;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getBahnBlogArticle(pageUrl);
   }
 
   async getHupacArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(
-        document.querySelectorAll(
-          '#bodypage > div:nth-child(1) > table > tbody > tr:nth-child(4) > td > div > table > tbody > tr > td.ZonaCore > table',
-        ),
-      ).map((article: HTMLElement) => {
-        return article.textContent;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getHupacArticle(pageUrl);
   }
 
   async getDoppelArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(
-        document.querySelectorAll('#__layout > div > div > div > div.page-wrapper.gated-false > div.block-holder'),
-      ).map((article: HTMLElement) => {
-        return article.textContent;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getDoppelArticle(pageUrl);
   }
 
   async getAarglArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('div[data-eb-posts]')).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getAarglArticle(pageUrl);
   }
 
   async getRbslArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#main-page-container > main > div > div.layout-content')).map(
-        (article: HTMLElement) => {
-          return article.innerText;
-        },
-      );
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getRbslArticle(pageUrl);
   }
 
   async getCstlArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(
-        document.querySelectorAll(
-          'article > div.entry-content > div > div > div.et_pb_section  div.et_pb_column_2.et-last-child',
-        ),
-      ).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getCstlArticle(pageUrl);
   }
 
   async getCarGorailArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(
-        document.querySelectorAll('article > div.entry-content > div.et-l.et-l--post div.et_pb_text_inner'),
-      ).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getCarGorailArticle(pageUrl);
   }
 
   async getZentralBahnArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(
-        document.querySelectorAll('#content > div.main-content > div > section.container.section.ce-text'),
-      ).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getZentralBahnArticle(pageUrl);
   }
 
   async getStadtArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(
-        document.querySelectorAll('#content > div > stzh-pagecontent > div > div > stzh-section stzh-content'),
-      ).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getStadtArticle(pageUrl);
   }
 
   async getZvvArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(
-        document.querySelectorAll('main.container div.container div.cmp-wrapper:not(.infobox) > div.cmp-text'),
-      ).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getZvvArticle(pageUrl);
   }
 
   async getAlstomArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#block-alstom-contenudelapageprincipale > div.content section')).map(
-        (article: HTMLElement) => {
-          return article.innerText;
-        },
-      );
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getAlstomArticle(pageUrl);
   }
 
   async getAbbArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#PublicWrapper > section.templateMainSection > main > article')).map(
-        (article: HTMLElement) => {
-          return article.innerText;
-        },
-      );
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getAbbArticle(pageUrl);
   }
 
   async getRhombergArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(
-        document.querySelectorAll(
-          'body > div.content > div.block-container-background > article > section.block--text',
-        ),
-      ).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getRhombergArticle(pageUrl);
   }
 
   async getBlsArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#main > div.mod_paper.paper-high.container .paper-items')).map(
-        (article: HTMLElement) => {
-          return article.innerText;
-        },
-      );
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getBlsArticle(pageUrl);
   }
 
   async getMuellerFrauenNewsArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#news > article > div > div.five.columns.offset-by-one')).map(
-        (article: HTMLElement) => {
-          return article.innerText;
-        },
-      );
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getMuellerFrauenNewsArticle(pageUrl);
   }
 
   async getCVanoliArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('body section.section-news-single div.section-text')).map(
-        (article: HTMLElement) => {
-          return article.innerText;
-        },
-      );
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getCVanoliArticle(pageUrl);
   }
 
-  async getPressePortalArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#main article > div.article__body')).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+  async getPressePortalAdArticle(pageUrl: string) {
+    return getPressePortalAdArticle(pageUrl);
   }
 
   async getRhbProjectArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('section > div.panel_content div.mod_content_text p.bodytext')).map(
-        (article: HTMLElement) => {
-          return article.innerText;
-        },
-      );
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getRhbProjectArticle(pageUrl);
   }
 
   async getSobArticle(pageUrl: string) {
-    const { browser, page } = await this.getPuppeteerInstance();
-
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-
-    const originalArticle = await page.evaluate(() => {
-      return Array.from(
-        document.querySelectorAll('div.news.news-single div.article  div.col-12.col-md-6.col-lg-8'),
-      ).map((article: HTMLElement) => {
-        return article.innerText;
-      });
-    });
-
-    await browser.close();
-    return originalArticle.join();
+    return getSobArticle(pageUrl);
   }
 }
