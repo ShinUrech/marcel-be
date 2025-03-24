@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
+import { ArticleType } from 'src/models/articles.models';
 
 //**/ NOTE: "baublatt.ch/" SCRAPPING SCRIPT
 export async function getAllBaublattArticles() {
@@ -12,10 +13,12 @@ export async function getAllBaublattArticles() {
   const articles = [];
   let pageCount = 1;
 
+  const PAGES_COUNT = 1;
+
   while (true) {
     console.log(`Scraping page ${pageCount}...`);
 
-    const teaserArticles = await page.evaluate(() => {
+    const teaserArticles = await page.evaluate((articleType) => {
       return Array.from(document.querySelectorAll('#app > div.main-content > div article.article-item')).map(
         (article) => {
           const url = article.querySelector('a')?.getAttribute('href');
@@ -27,15 +30,17 @@ export async function getAllBaublattArticles() {
           const image = imageElement ? imageElement.getAttribute('src') : '';
 
           return {
+            baseUrl: window.location.href,
+            type: articleType,
             title: title?.innerText?.trim() || 'N/A',
             url: url || 'N/A',
-            date: date?.innerText.trim() || 'N/A',
-            description: description.innerText.trim() || 'N/A',
+            dateText: date?.innerText.trim() || 'N/A',
+            teaser: description.innerText.trim() || 'N/A',
             image: image || 'N/A',
           };
         },
       );
-    });
+    }, ArticleType.News);
 
     articles.push(...teaserArticles);
     const nextPageUrl = await page.evaluate(() => {
@@ -45,10 +50,31 @@ export async function getAllBaublattArticles() {
 
     if (!nextPageUrl) break;
 
+    if (pageCount >= PAGES_COUNT) {
+      break;
+    }
+
     pageCount++;
     await page.goto(nextPageUrl, { waitUntil: 'networkidle2' });
   }
 
   await browser.close();
   return articles;
+}
+
+export async function getBaublattArticle(pageUrl: string) {
+  const { browser, page } = await getPuppeteerInstance();
+
+  await page.goto(pageUrl, { waitUntil: 'networkidle2' });
+
+  const originalArticle = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll('#app article.article:not(.article-item)')).map(
+      (article: HTMLElement) => {
+        return article.textContent;
+      },
+    );
+  });
+
+  await browser.close();
+  return originalArticle.join();
 }

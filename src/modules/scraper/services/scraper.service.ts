@@ -38,18 +38,36 @@ import { getAllCVanoliArticles } from './scraping-scripts/c-vanoli.script';
 import { getAllRhbNewsArticles, getAllRhbProjectArticles } from './scraping-scripts/rhb.script';
 import { getAllSobArticles } from './scraping-scripts/sob.script';
 import { ArticlesService } from './articles.service';
+import { ScraperDeeperService } from './scraper-deeper.service';
 
 @Injectable()
 export class ScraperService {
-  constructor(private articlesService: ArticlesService) {}
+  constructor(
+    private articlesService: ArticlesService,
+    private scraperDeeperService: ScraperDeeperService,
+  ) {}
 
   //**/ NOTE: YOUTUBE CHANEL SCRAPPING SCRIPT
   async getAllVideos(channelName: string): Promise<any[]> {
-    return getAllVideos(channelName);
+    const articles = await getAllVideos(channelName);
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      if (article.title !== 'N/A') {
+        await this.articlesService.createArticle(article);
+      }
+    }
+    return articles;
   }
   //**/ NOTE: YOUTUBE CHANEL SCRAPPING SCRIPT WITH SEARCH
   async getAllVideosFromSearch(channelName: string, term: string): Promise<any[]> {
-    return getAllVideosFromSearch(channelName, term);
+    const articles = await getAllVideosFromSearch(channelName, term);
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      if (article.title !== 'N/A') {
+        await this.articlesService.createArticle(article);
+      }
+    }
+    return articles;
   }
   //**/ NOTE: "roalps.ch" SCRAPPING SCRIPT
   async getAllRoalpsArticles() {
@@ -57,6 +75,7 @@ export class ScraperService {
 
     for (let index = 0; index < articles.length; index++) {
       const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getRoalpsArticle(article.url);
       await this.articlesService.createArticle(article);
     }
 
@@ -68,6 +87,7 @@ export class ScraperService {
 
     for (let index = 0; index < articles.length; index++) {
       const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getSevOnlineArticle(article.url);
       await this.articlesService.createArticle(article);
     }
 
@@ -75,180 +95,441 @@ export class ScraperService {
   }
 
   //**/ NOTE: "otif.org/" SCRAPPING SCRIPT
+  // NOTE: PDF
   async getAllOtifArticles() {
-    return getAllOtifArticles();
+    const articles = await getAllOtifArticles();
+
+    for (let index = 0; index < 2; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getOtifArticle(article.url);
+      // await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "citrap-vaud.ch/" SCRAPPING SCRIPT
   async getAllCitrapArticles() {
-    return getAllCitrapArticles();
+    const articles = await getAllCitrapArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getCitrapArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "bernmobil.ch/" SCRAPPING SCRIPT
   async getAllBernmobilArticles() {
-    return getAllBernmobilArticles();
+    const articles = await getAllBernmobilArticles();
+
+    for (let index = 0; index < 6; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getBernmobilArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "bahnberufe.de/" SCRAPPING SCRIPT
   async getAllBahnberufeArticles() {
-    return getAllBahnberufeArticles();
+    const articles = await getAllBahnberufeArticles();
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getBahnberufeArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "lok-report.de/" SCRAPPING SCRIPT
   async getAllLokReportArticles() {
-    return getAllLokReportArticles();
+    const articles = await getAllLokReportArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getLokReportArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "railmarket.com/" SCRAPPING SCRIPT
   async getAllRailMarketArticles() {
-    return getAllRailMarketArticles();
+    const articles = await getAllRailMarketArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getRailMarketArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "baublatt.ch/" SCRAPPING SCRIPT
   async getAllBaublattArticles() {
-    return getAllBaublattArticles();
+    const articles = await getAllBaublattArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getBaublattArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "pro-bahn.ch/" SCRAPPING SCRIPT
   async getAllProBahnArticles() {
-    return getAllProBahnArticles();
+    const articles = await getAllProBahnArticles();
+
+    for (let index = 0; index < 4; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getProBahnArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "presseportal.ch/" SCRAPPING SCRIPT
   async getAllPressEportalArticles() {
-    return getAllPressEportalArticles();
+    const articles = await getAllPressEportalArticles();
+
+    for (let index = 0; index < 8; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getPressEportalArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "bahnblogstelle.com/" SCRAPPING SCRIPT
   async getAllBahnBlogArticles() {
-    return getAllBahnBlogArticles();
+    const articles = await getAllBahnBlogArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getBahnBlogArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "linkedIn POST" SCRAPPING SCRIPT
-  async getAllLinkedInArticles() {
-    await getAllLinkedInArticles();
+  async getAllLinkedInArticles(companyName: string) {
+    const articles = await getAllLinkedInArticles(companyName);
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "hupac.com/" SCRAPPING SCRIPT
   async getAllHupacArticles() {
-    return getAllHupacArticles();
+    const articles = await getAllHupacArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getHupacArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "doppelmayr.com/" SCRAPPING SCRIPT
   async getAllDoppelArticles() {
-    return getAllDoppelArticles();
+    const articles = await getAllDoppelArticles();
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getDoppelArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "aargauverkehr.ch/" SCRAPPING SCRIPT
   async getAllAarglArticles() {
-    return getAllAarglArticles();
+    const articles = await getAllAarglArticles();
+
+    for (let index = 0; index < 5; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getAarglArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "vvl.ch/" SCRAPPING SCRIPT
   //! NOTE : COMPLETED
   async getAllVvlArticles() {
-    return getAllVvlArticles();
+    const articles = await getAllVvlArticles();
+
+    // for (let index = 0; index < articles.length; index++) {
+    //   const article = articles[index];
+    //   await this.articlesService.createArticle(article);
+    // }
+
+    return articles;
   }
 
   //**/ NOTE: "rbs.ch/" SCRAPPING SCRIPT
   async getAllRbslArticles() {
-    return getAllRbslArticles();
+    const articles = await getAllRbslArticles();
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getRbslArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "cst.ch/news/" SCRAPPING SCRIPT
   async getAllCstlArticles() {
-    return getAllCstlArticles();
+    const articles = await getAllCstlArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getCstlArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "cargorail.ch/" SCRAPPING SCRIPT
   async getAllCarGorailArticles() {
-    return getAllCarGorailArticles();
+    const articles = await getAllCarGorailArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getCarGorailArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "zentralbahn.ch/" SCRAPPING SCRIPT
   async getAllZentralBahnArticles() {
-    return getAllZentralBahnArticles();
+    const articles = await getAllZentralBahnArticles();
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getZentralBahnArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "voev.ch/" SCRAPPING SCRIPT
   // TODO : [ON-HOLD]
   async getAllVoevArticles() {
-    return getAllVoevArticles();
+    const articles = await getAllVoevArticles();
+    return articles;
   }
 
   //**/ NOTE: "stadt-zuerich.ch/" SCRAPPING SCRIPT
   async getAllStadtArticles() {
-    return getAllStadtArticles();
+    const articles = await getAllStadtArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getStadtArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "zvv.ch/" SCRAPPING SCRIPT
   async getAllZvvArticles() {
-    return getAllZvvArticles();
+    const articles = await getAllZvvArticles();
+
+    for (let index = 0; index < 5; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getZvvArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "alstom.com/" SCRAPPING SCRIPT
   async getAllAlstomArticles() {
-    return getAllAlstomArticles();
+    const articles = await getAllAlstomArticles();
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getAlstomArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "new.abb.com/" SCRAPPING SCRIPT
   async getAllAbbArticles() {
-    return getAllAbbArticles();
+    const articles = await getAllAbbArticles();
+    for (let index = 0; index < 5; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getAbbArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "rhomberg-sersa.com/" SCRAPPING SCRIPT
   async getAllRhombergArticles() {
-    return getAllRhombergArticles();
+    const articles = await getAllRhombergArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getRhombergArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "bls.ch/" SCRAPPING SCRIPT
   async getAllBlsArticles() {
-    return getAllBlsArticles();
+    const articles = await getAllBlsArticles();
+
+    for (let index = 0; index < 7; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getBlsArticle(article.url);
+
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "bls.ch/" SCRAPPING SCRIPT
   async getAllBlsAdArticles() {
-    return getAllBlsAdArticles();
+    const articles = await getAllBlsAdArticles();
+    for (let index = 0; index < 4; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getBlsArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "sbbcargo.com/" SCRAPPING SCRIPT
   //! NOTE : COMPLETED
   async getAllSbbCargoArticles() {
-    return getAllSbbCargoArticles();
+    const articles = await getAllSbbCargoArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "mueller-frauenfeld.ch/" SCRAPPING SCRIPT
   async getAllMuellerFrauenNewsArticles() {
-    return getAllMuellerFrauenNewsArticles();
+    const articles = await getAllMuellerFrauenNewsArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getMuellerFrauenNewsArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "mueller-frauenfeld.ch/" SCRAPPING SCRIPT
   async getAllMuellerFrauenVideosArticles() {
-    return getAllMuellerFrauenVideosArticles();
+    const articles = await getAllMuellerFrauenVideosArticles();
+
+    // for (let index = 0; index < articles.length; index++) {
+    //   const article = articles[index];
+    //   await this.articlesService.createArticle(article);
+    // }
+    return articles;
   }
 
   //**/ NOTE: "c-vanoli.ch/" SCRAPPING SCRIPT
   async getAllCVanoliArticles() {
-    return getAllCVanoliArticles();
+    const articles = await getAllCVanoliArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getCVanoliArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "presseportal.ch/" SCRAPPING SCRIPT
-  async getAllPressePortalArticles() {
-    return getAllPressePortalEmArticles();
+  async getAllPressePortalEmArticles() {
+    const articles = await getAllPressePortalEmArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getPressePortalAdArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+    return articles;
   }
 
   //**/ NOTE: "rhb.ch/" SCRAPPING SCRIPT
   async getAllRhbProjectArticles() {
-    return getAllRhbProjectArticles();
+    const articles = await getAllRhbProjectArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getRhbProjectArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 
   //**/ NOTE: "rhb.ch/" SCRAPPING SCRIPT
   async getAllRhbNewsArticles() {
-    return getAllRhbNewsArticles();
+    const articles = await getAllRhbNewsArticles();
+
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getRhbProjectArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+    return articles;
   }
 
   //**/ NOTE: "sob.ch/" SCRAPPING SCRIPT
   async getAllSobArticles() {
-    return getAllSobArticles();
+    const articles = await getAllSobArticles();
+
+    for (let index = 0; index < 10; index++) {
+      const article = articles[index];
+      article['originalContent'] = await this.scraperDeeperService.getSobArticle(article.url);
+      await this.articlesService.createArticle(article);
+    }
+
+    return articles;
   }
 }

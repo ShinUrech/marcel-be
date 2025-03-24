@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
+import { ArticleType } from 'src/models/articles.models';
 
 //**/ NOTE: "railmarket.com/" SCRAPPING SCRIPT
 export async function getAllRailMarketArticles() {
@@ -12,10 +13,12 @@ export async function getAllRailMarketArticles() {
   const articles = [];
   let pageCount = 1;
 
+  const PAGES_COUNT = 1;
+
   while (true) {
     console.log(`Scraping page ${pageCount}...`);
 
-    const teaserArticles = await page.evaluate(() => {
+    const teaserArticles = await page.evaluate((articleType) => {
       return Array.from(document.querySelectorAll('#content > div article')).map((article) => {
         const url = article.querySelector('h3 a')?.getAttribute('href');
         const title = article.querySelector('h3 a') as HTMLElement;
@@ -26,14 +29,16 @@ export async function getAllRailMarketArticles() {
         const image = imageElement ? imageElement.getAttribute('src') : '';
 
         return {
+          baseUrl: window.location.href,
+          type: articleType,
           title: title?.innerText?.trim() || 'N/A',
-          url: `https://de.railmarket.com${url}` || 'N/A',
-          date: date?.innerText.trim() || 'N/A',
-          description: description.innerText.trim() || 'N/A',
+          url: url ? `https://de.railmarket.com${url}` : 'N/A',
+          dateText: date?.innerText.trim() || 'N/A',
+          teaser: description.innerText.trim() || 'N/A',
           image: image || 'N/A',
         };
       });
-    });
+    }, ArticleType.News);
 
     articles.push(...teaserArticles);
 
@@ -41,6 +46,10 @@ export async function getAllRailMarketArticles() {
       const nextPage = document.querySelector('.pagination .page-item:last-child a');
       return nextPage ? nextPage.getAttribute('aria-label') === 'Last page' : false;
     });
+
+    if (pageCount >= PAGES_COUNT) {
+      break;
+    }
 
     if (!nextPageExists) break;
 
@@ -66,4 +75,23 @@ export async function getAllRailMarketArticles() {
 
   await browser.close();
   return articles;
+}
+
+export async function getRailMarketArticle(pageUrl: string) {
+  const { browser, page } = await getPuppeteerInstance();
+
+  await page.goto(pageUrl, { waitUntil: 'networkidle2' });
+
+  const originalArticle = await page.evaluate(() => {
+    return Array.from(
+      document.querySelectorAll(
+        '#content > div > div.container.space-bottom-1 > div > div.col-12.col-lg-8.mb-5.mb-lg-0',
+      ),
+    ).map((article: HTMLElement) => {
+      return article.innerText;
+    });
+  });
+
+  await browser.close();
+  return originalArticle.join();
 }

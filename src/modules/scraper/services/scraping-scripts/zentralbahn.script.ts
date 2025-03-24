@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
+import { ArticleType } from 'src/models/articles.models';
 
 //**/ NOTE: "zentralbahn.ch/" SCRAPPING SCRIPT
 export async function getAllZentralBahnArticles() {
@@ -10,11 +11,11 @@ export async function getAllZentralBahnArticles() {
   await page.goto(baseUrl, { waitUntil: 'networkidle2' });
 
   const articles = [];
-  const PAGES_COUNT = 4;
+  const PAGES_COUNT = 2;
 
   for (let index = 1; index < PAGES_COUNT; index++) {
     console.log(`Scraping page ${index}...`);
-    const teaserArticles = await page.evaluate(() => {
+    const teaserArticles = await page.evaluate((articleType) => {
       return Array.from(
         document.querySelectorAll(
           ' #content > div.main-content > div > section.section.ce-news-list li.news-overview__item',
@@ -28,14 +29,16 @@ export async function getAllZentralBahnArticles() {
         const image = imageElement ? imageElement.getAttribute('src') : '';
 
         return {
+          baseUrl: window.location.href,
+          type: articleType,
           title: title?.innerText?.trim() || 'N/A',
-          url: `https://www.rbs.ch/${url}` || 'N/A',
-          date: 'N/A',
-          description: description.textContent.trim() || 'N/A',
-          image: `https://www.rbs.ch/${image}` || 'N/A',
+          url: url ? `https://www.zentralbahn.ch${url}` : 'N/A',
+          dateText: 'N/A',
+          teaser: description.textContent.trim() || 'N/A',
+          image: image ? `https://www.zentralbahn.ch${image}` : 'N/A',
         };
       });
-    });
+    }, ArticleType.News);
 
     articles.push(...teaserArticles);
 
@@ -56,4 +59,21 @@ export async function getAllZentralBahnArticles() {
 
   await browser.close();
   return articles;
+}
+
+export async function getZentralBahnArticle(pageUrl: string) {
+  const { browser, page } = await getPuppeteerInstance();
+
+  await page.goto(pageUrl, { waitUntil: 'networkidle2' });
+
+  const originalArticle = await page.evaluate(() => {
+    return Array.from(
+      document.querySelectorAll('#content > div.main-content > div > section.container.section.ce-text'),
+    ).map((article: HTMLElement) => {
+      return article.innerText;
+    });
+  });
+
+  await browser.close();
+  return originalArticle.join();
 }

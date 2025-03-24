@@ -12,7 +12,7 @@ export const getAllRoalpsArticles = async () => {
 
   let pageCount = 1;
 
-  const PAGES_COUNT = 5;
+  const PAGES_COUNT = 2;
 
   while (true) {
     const loadMoreButton = await page.$('.loadMoreButton');
@@ -52,3 +52,19 @@ export const getAllRoalpsArticles = async () => {
   await browser.close();
   return teaserArticles;
 };
+
+//**/ NOTE: "roalps.ch" SCRAPPING SCRIPT
+export async function getRoalpsArticle(pageUrl: string) {
+  const { browser, page } = await getPuppeteerInstance();
+
+  await page.goto(pageUrl, { waitUntil: 'networkidle2' });
+
+  const originalArticle = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll('#main > section .section__content')).map((article: HTMLElement) => {
+      return article.innerText;
+    });
+  });
+
+  await browser.close();
+  return originalArticle.join();
+}

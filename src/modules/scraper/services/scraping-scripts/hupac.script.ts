@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
+import { ArticleType } from 'src/models/articles.models';
 
 //**/ NOTE: "hupac.com/" SCRAPPING SCRIPT
 export async function getAllHupacArticles() {
@@ -12,25 +13,27 @@ export async function getAllHupacArticles() {
   const articles = [];
   let pageCount = 1;
 
-  const PAGES_COUNT = 8;
+  const PAGES_COUNT = 1;
 
   for (let index = 0; index < PAGES_COUNT; index++) {
     console.log(`Scraping page ${pageCount}...`);
-    const teaserArticles = await page.evaluate(() => {
+    const teaserArticles = await page.evaluate((articleType) => {
       return Array.from(document.querySelectorAll('#fric_7633 .ItemList')).map((article) => {
         const url = article.querySelector('.LinkOverAllSimple a')?.getAttribute('href');
         const title = article.querySelector('.ObjListTitolo h3') as HTMLElement;
         const date = article.querySelector('.ObjListData') as HTMLElement;
 
         return {
+          baseUrl: window.location.href,
+          type: articleType,
           title: title?.innerText?.trim() || 'N/A',
           url: `https://www.hupac.com/${url}` || 'N/A',
-          date: date?.innerText.trim() || 'N/A',
-          description: 'N/A',
+          dateText: date?.innerText.trim() || 'N/A',
+          teaser: 'N/A',
           image: 'N/A',
         };
       });
-    });
+    }, ArticleType.News);
 
     articles.push(...teaserArticles);
 
@@ -46,4 +49,23 @@ export async function getAllHupacArticles() {
 
   await browser.close();
   return articles;
+}
+
+export async function getHupacArticle(pageUrl: string) {
+  const { browser, page } = await getPuppeteerInstance();
+
+  await page.goto(pageUrl, { waitUntil: 'networkidle2' });
+
+  const originalArticle = await page.evaluate(() => {
+    return Array.from(
+      document.querySelectorAll(
+        '#bodypage > div:nth-child(1) > table > tbody > tr:nth-child(4) > td > div > table > tbody > tr > td.ZonaCore > table',
+      ),
+    ).map((article: HTMLElement) => {
+      return article.textContent;
+    });
+  });
+
+  await browser.close();
+  return originalArticle.join();
 }
