@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { ScraperController } from './controllers/scraper.controller';
 import { ScraperService } from './services/scraper.service';
