@@ -117,7 +117,7 @@ export class ContentGeneratorService {
       const article = articles[index];
       console.log(`------->>>> Article ${index} of ${articles.length} : ${article.title}`);
       const content = await this.createArticleContent(article.originalContent);
-      console.log(`-->>  Result: `, content);
+      // console.log(`-->>  Result: `, content);
       await new Promise((resolve) => setTimeout(resolve, 10000));
       const generatedContent = getInnerBody(content);
       article.generatedContent = generatedContent;
