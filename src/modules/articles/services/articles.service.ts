@@ -87,6 +87,10 @@ export class ArticlesService {
     return this.articleModel.find({ dateText: { $ne: 'N/A' } });
   }
 
+  findAllBeforeDate(beforeDate: Date) {
+    return this.articleModel.find({ date: { $lt: beforeDate }, type: { $eq: ArticleType.News } });
+  }
+
   findAllVideo() {
     return this.articleModel.find({ type: { $eq: 'Video' } });
   }
