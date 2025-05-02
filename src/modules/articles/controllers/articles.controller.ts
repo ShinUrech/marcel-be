@@ -58,7 +58,7 @@ export class ArticlesController {
   async getDate() {
     const beforeDate = new Date('2024-06-01');
     const articles = await this.articleService.findAllBeforeDate(beforeDate);
-    console.log('---> articles', articles.length);
+
     return articles;
   }
 

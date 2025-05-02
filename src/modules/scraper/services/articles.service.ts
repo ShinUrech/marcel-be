@@ -57,6 +57,20 @@ export class ArticlesService {
       .exec();
   }
 
+  findNoImageTitleContext() {
+    return this.articleModel
+      .find({
+        $and: [
+          {
+            $or: [{ imageTitleContext: { $exists: false } }, { imageTitleContext: { $eq: '' } }],
+          },
+          { type: ArticleType.News },
+        ],
+      })
+      .sort({ date: -1 })
+      .exec();
+  }
+
   findNoTeaser() {
     return this.articleModel
       .find({
@@ -99,6 +113,10 @@ export class ArticlesService {
 
   updateTeaser(id: string, generatedTeaser: string) {
     return this.articleModel.findOneAndUpdate({ _id: id }, { $set: { generatedTeaser } }, { new: true });
+  }
+
+  updateImageTitleContext(id: string, imageTitleContext: string) {
+    return this.articleModel.findOneAndUpdate({ _id: id }, { $set: { imageTitleContext } }, { new: true });
   }
 
   Delete(id: string) {

@@ -30,6 +30,9 @@ export class Article {
   title: string;
 
   @Prop({ required: false })
+  imageTitleContext: string;
+
+  @Prop({ required: false })
   dateText: string;
 
   @Prop({ required: false })

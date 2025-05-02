@@ -87,6 +87,23 @@ export class ContentGeneratorService {
     return (await completion).choices[0].message.content;
   }
 
+  async createImageTitleContext(originalArticle) {
+    const API_KEY = this.config.get('chatGPT');
+    const prompt = `Summarize this in English for short image search title : "${originalArticle}"`;
+
+    const openai = new OpenAI({
+      apiKey: API_KEY,
+    });
+
+    const completion = openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      store: true,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    return (await completion).choices[0].message.content;
+  }
+
   async createArticleVideo(youtubeVideoLink) {
     const API_KEY = this.config.get('chatGPT');
 
@@ -109,6 +126,20 @@ export class ContentGeneratorService {
     });
 
     return (await completion).choices[0].message.content;
+  }
+
+  async generateImageTitleContext() {
+    const articles = await this.articlesService.findNoImageTitleContext();
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      console.log(`--->> Article ${index} of ${articles.length} : ${article.title}`);
+      const imageTitleContext = await this.createImageTitleContext(article.originalContent);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      console.log('---->>>>>> Title: ', imageTitleContext);
+      article.imageTitleContext = imageTitleContext;
+      await this.articlesService.updateImageTitleContext(article.id, imageTitleContext);
+    }
+    return articles;
   }
 
   async generateContent() {
