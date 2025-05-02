@@ -20,4 +20,9 @@ export class ContentGeneratorController {
   async getVideo() {
     return this.contentGeneratorService.generateYoutubeSummary();
   }
+
+  @Get('image-title')
+  async getImageTitle() {
+    return this.contentGeneratorService.generateImageTitleContext();
+  }
 }

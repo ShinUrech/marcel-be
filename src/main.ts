@@ -23,6 +23,7 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost, logger));
   app.use(morgan('tiny'));
 
