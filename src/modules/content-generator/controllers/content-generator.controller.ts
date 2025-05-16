@@ -25,4 +25,9 @@ export class ContentGeneratorController {
   async getImageTitle() {
     return this.contentGeneratorService.generateImageTitleContext();
   }
+
+  @Get('better-images')
+  async getBetterImages() {
+    return this.contentGeneratorService.generateGoogleImage();
+  }
 }

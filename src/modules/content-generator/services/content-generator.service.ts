@@ -6,7 +6,12 @@ import OpenAI from 'openai';
 import { formatHtmlVideo } from 'src/common/utils/format-html';
 import { getInnerBody } from 'src/common/utils/get-inner-body';
 import { ArticlesService } from 'src/modules/scraper/services/articles.service';
-
+// import { imageSize } from 'image-size';
+// import * as path from 'path';
+// import { readFileSync } from 'fs';
+// import { isLargeImg } from 'src/common/utils/enhance-image';
+import getImage from 'src/common/helpers/search-image-google';
+import { downloadImage } from 'src/common/helpers/download-image';
 @Injectable()
 export class ContentGeneratorService {
   constructor(
@@ -89,7 +94,7 @@ export class ContentGeneratorService {
 
   async createImageTitleContext(originalArticle) {
     const API_KEY = this.config.get('chatGPT');
-    const prompt = `Summarize this in English for short image search title : "${originalArticle}"`;
+    const prompt = `Summarize this in English in 3 or 2 words for short image search : "${originalArticle}"`;
 
     const openai = new OpenAI({
       apiKey: API_KEY,
@@ -181,6 +186,23 @@ export class ContentGeneratorService {
       const generatedContent = getInnerBody(content);
       article.generatedContent = formatHtmlVideo(generatedContent);
       await this.articlesService.updateContent(article.id, formatHtmlVideo(generatedContent));
+    }
+    return articles;
+  }
+
+  async generateGoogleImage() {
+    const articles = await this.articlesService.findNewsNoGoogleImages();
+    let imgIdx = 0;
+    for (let index = 0; index < articles.length; index++) {
+      const article = articles[index];
+      if (article.imageTitleContext && !article.imageLocal) {
+        imgIdx++;
+        console.log(`(${imgIdx})---> I should Search for: ${article.imageTitleContext}`);
+        const { url, width, height } = await getImage(article.imageTitleContext);
+        const filename = await downloadImage(url);
+        console.log('-----> New Image Dimensions: ', width, height);
+        await this.articlesService.findAndUpdateGoogleImage(article._id, filename);
+      }
     }
     return articles;
   }

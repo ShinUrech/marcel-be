@@ -3,6 +3,8 @@ import * as path from 'path';
 import * as sharp from 'sharp';
 import * as pc from 'picocolors';
 
+const MIN_WIDTH = 1000;
+const MIN_HEIGHT = 700;
 export async function enhanceImage(filename) {
   const localPath = path.resolve(path.join(process.cwd(), 'public', filename));
   try {
@@ -32,4 +34,12 @@ export async function enhanceImage(filename) {
     console.error('Error enhancing image:', error);
     return filename;
   }
+}
+
+export const largeImages = (images) => {
+  return images.filter((img) => img.width >= MIN_WIDTH && img.height >= MIN_HEIGHT);
+};
+
+export function isLargeImg(dimensions) {
+  return dimensions.width >= MIN_WIDTH && dimensions.height >= MIN_HEIGHT;
 }
