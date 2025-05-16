@@ -59,29 +59,29 @@ export class ArticlesService {
     };
   }
 
-  // async findAllLinkedIns(paginationDto: PaginationDto) {
-  //   const { page } = paginationDto;
-  //   const limit = 9;
-  //   const skip = (page - 1) * limit;
+  async findAllLinkedIns(paginationDto: PaginationDto) {
+    const { page } = paginationDto;
+    const limit = 9;
+    const skip = (page - 1) * limit;
 
-  //   // Fetch paginated articles
-  //   const articles = await this.articleModel
-  //     .find({ type: { $eq: 'LinkedIn' } })
-  //     .sort({ date: -1 })
-  //     .skip(skip)
-  //     .limit(limit)
-  //     .exec();
+    // Fetch paginated articles
+    const articles = await this.articleModel
+      .find({ type: { $eq: 'LinkedIn' } })
+      .sort({ date: -1 })
+      .skip(skip)
+      .limit(limit)
+      .exec();
 
-  //   // Get total count
-  //   const total = await this.articleModel.countDocuments({ type: { $eq: 'LinkedIn' } });
+    // Get total count
+    const total = await this.articleModel.countDocuments({ type: { $eq: 'LinkedIn' } });
 
-  //   return {
-  //     data: articles,
-  //     currentPage: page,
-  //     totalPages: Math.ceil(total / limit),
-  //     totalItems: total,
-  //   };
-  // }
+    return {
+      data: articles,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalItems: total,
+    };
+  }
 
   // async findAllLinkedIns(paginationDto: PaginationDto) {
   //   const { page } = paginationDto;
@@ -126,51 +126,51 @@ export class ArticlesService {
   //   };
   // }
 
-  async findAllLinkedIns(paginationDto: PaginationDto) {
-    const { page } = paginationDto;
-    const limit = 9;
-    const fetchLimit = limit * 5; // Fetch more than needed to ensure good mixing
+  // async findAllLinkedIns(paginationDto: PaginationDto) {
+  //   const { page } = paginationDto;
+  //   const limit = 9;
+  //   const fetchLimit = limit * 5; // Fetch more than needed to ensure good mixing
 
-    // Step 1: Fetch sorted articles
-    const allArticles = await this.articleModel.find({ type: 'LinkedIn' }).sort({ date: -1 }).limit(fetchLimit).exec();
-    // console.log('----> allArticles', allArticles);
-    // Step 2: Group by baseUrl
-    const grouped: Record<string, any[]> = {};
-    for (const article of allArticles) {
-      const key = article.baseUrl;
-      if (!grouped[key]) grouped[key] = [];
-      grouped[key].push(article);
-    }
-    console.log('--> grouped', grouped.length);
-    // Step 3: Interleave up to 3 per group at a time
-    const mixed: any[] = [];
-    let stillHasArticles = true;
+  //   // Step 1: Fetch sorted articles
+  //   const allArticles = await this.articleModel.find({ type: 'LinkedIn' }).sort({ date: -1 }).limit(fetchLimit).exec();
+  //   // console.log('----> allArticles', allArticles);
+  //   // Step 2: Group by baseUrl
+  //   const grouped: Record<string, any[]> = {};
+  //   for (const article of allArticles) {
+  //     const key = article.baseUrl;
+  //     if (!grouped[key]) grouped[key] = [];
+  //     grouped[key].push(article);
+  //   }
+  //   console.log('--> grouped', grouped.length);
+  //   // Step 3: Interleave up to 3 per group at a time
+  //   const mixed: any[] = [];
+  //   let stillHasArticles = true;
 
-    while (stillHasArticles && mixed.length < fetchLimit) {
-      stillHasArticles = false;
-      for (const key of Object.keys(grouped)) {
-        const group = grouped[key];
-        const chunk = group.splice(0, 3);
-        mixed.push(...chunk);
-        if (group.length > 0) {
-          stillHasArticles = true;
-        }
-      }
-    }
+  //   while (stillHasArticles && mixed.length < fetchLimit) {
+  //     stillHasArticles = false;
+  //     for (const key of Object.keys(grouped)) {
+  //       const group = grouped[key];
+  //       const chunk = group.splice(0, 3);
+  //       mixed.push(...chunk);
+  //       if (group.length > 0) {
+  //         stillHasArticles = true;
+  //       }
+  //     }
+  //   }
 
-    // Step 4: Apply pagination
-    const start = (page - 1) * limit;
-    const paginated = mixed.slice(start, start + limit);
+  //   // Step 4: Apply pagination
+  //   const start = (page - 1) * limit;
+  //   const paginated = mixed.slice(start, start + limit);
 
-    const total = await this.articleModel.countDocuments({ type: 'LinkedIn' });
+  //   const total = await this.articleModel.countDocuments({ type: 'LinkedIn' });
 
-    return {
-      data: paginated,
-      currentPage: page,
-      totalPages: Math.ceil(total / limit),
-      totalItems: total,
-    };
-  }
+  //   return {
+  //     data: paginated,
+  //     currentPage: page,
+  //     totalPages: Math.ceil(total / limit),
+  //     totalItems: total,
+  //   };
+  // }
 
   findAllTest() {
     return this.articleModel.find({ dateText: { $ne: 'N/A' } });

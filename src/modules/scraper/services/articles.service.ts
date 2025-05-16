@@ -4,13 +4,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Article, ArticleDocument, ArticleType } from 'src/models/articles.models';
 import { CreateArticleDto } from '../dtos/create-article.dto';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as pc from 'picocolors';
 import { formatDate, parseRelativeDate, parseRelativeDateLinkedIn } from 'src/common/utils/format-date';
 import { nanoid } from 'nanoid';
 import { formatHtmlLinkedIn } from 'src/common/utils/format-html';
 import { enhanceImage } from 'src/common/utils/enhance-image';
+import { downloadImage } from 'src/common/helpers/download-image';
 
 @Injectable()
 export class ArticlesService {
@@ -85,6 +83,20 @@ export class ArticlesService {
       .exec();
   }
 
+  findNewsNoGoogleImages() {
+    return this.articleModel
+      .find({
+        $and: [
+          {
+            $or: [{ googleImage: { $exists: false } }, { googleImage: { $eq: '' } }],
+          },
+          { type: ArticleType.News },
+        ],
+      })
+      .sort({ date: -1 })
+      .exec();
+  }
+
   findVideoNoSummary() {
     return this.articleModel
       .find({
@@ -124,10 +136,6 @@ export class ArticlesService {
   }
 
   async downloadImages() {
-    // const articles = await this.articleModel.find({
-    //   $or: [{ imageLocal: { $exists: false } }, { imageLocal: { $eq: '' } }],
-    // });
-
     const articles = await this.articleModel.find();
     for (let index = 0; index < articles.length; index++) {
       const article = articles[index];
@@ -135,33 +143,7 @@ export class ArticlesService {
       if (article.image && article.image !== 'N/A') {
         const imageUrl = article.image;
         try {
-          const response = await fetch(imageUrl, {
-            method: 'GET',
-            headers: {
-              'User-Agent':
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error(`Failed to fetch image, status: ${response.status}`);
-          }
-          console.log(pc.blueBright(`----->>> Processing Download Image Article ${index} of ${articles.length}`));
-          const arrayBuffer = await response.arrayBuffer();
-          const buffer = Buffer.from(arrayBuffer);
-
-          // Determine the file extension from the URL
-          const cleanUrl = imageUrl.split('?')[0];
-          const fileExtension = path.extname(cleanUrl);
-
-          const filename = `image-${Date.now()}${fileExtension || '.jpg'}`;
-          // Create the local file path with the appropriate extension
-          const localPath = path.resolve(path.join(process.cwd(), 'public', filename));
-
-          // Write the image buffer to a file on the disk
-          fs.writeFileSync(localPath, buffer);
-
-          console.log(`--->> Image downloaded successfully to ${localPath}`);
+          const filename = await downloadImage(imageUrl);
           // Enhance Image
           try {
             const outputName = await enhanceImage(filename);
@@ -188,6 +170,10 @@ export class ArticlesService {
         }
       }
     }
+  }
+
+  async findAndUpdateGoogleImage(id, filename) {
+    return this.articleModel.findOneAndUpdate({ _id: id }, { $set: { googleImage: filename } }, { new: true });
   }
 
   async formateDates() {

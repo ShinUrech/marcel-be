@@ -50,6 +50,9 @@ export class Article {
   @Prop({ required: false })
   imageLocal: string;
 
+  @Prop({ required: false })
+  googleImage: string;
+
   @Prop({ type: String, enum: ArticleType, default: ArticleType.News })
   type: ArticleType;
 
