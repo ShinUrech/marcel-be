@@ -1,9 +1,17 @@
 /* eslint-disable prettier/prettier */
 import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
 import { ArticleType } from 'src/models/articles.models';
+import { isAllowedYouTubeChannel } from '../scraping-config/target-sources.config';
 
 //**/ NOTE: YOUTUBE CHANEL SCRAPPING SCRIPT
 export const getAllVideos = async (channelName: string): Promise<any[]> => {
+  // Validate if channel is in approved list
+  if (!isAllowedYouTubeChannel(channelName)) {
+    console.warn(`⚠️  YouTube channel '${channelName}' is not in the approved list. Skipping scraping.`);
+    return [];
+  }
+
+  console.log(`✅ YouTube channel '${channelName}' is approved. Starting scraping...`);
   const { browser, page } = await getPuppeteerInstance();
 
   const channelUrl = `https://www.youtube.com/@${channelName}/videos`;
@@ -49,6 +57,13 @@ export const getAllVideos = async (channelName: string): Promise<any[]> => {
 
 //**/ NOTE: YOUTUBE CHANEL SCRAPPING SCRIPT WITH SEARCH
 export const getAllVideosFromSearch = async (channelName: string, term: string): Promise<any[]> => {
+  // Validate if channel is in approved list
+  if (!isAllowedYouTubeChannel(channelName)) {
+    console.warn(`⚠️  YouTube channel '${channelName}' is not in the approved list. Skipping search scraping.`);
+    return [];
+  }
+
+  console.log(`✅ YouTube channel '${channelName}' is approved. Starting search scraping for term: ${term}...`);
   const { browser, page } = await getPuppeteerInstance();
 
   const channelUrl = `https://www.youtube.com/@${channelName}/search?query=${term}`;

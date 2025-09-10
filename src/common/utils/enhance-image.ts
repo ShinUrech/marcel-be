@@ -1,13 +1,31 @@
 /* eslint-disable prettier/prettier */
 import * as path from 'path';
-import * as sharp from 'sharp';
 import * as pc from 'picocolors';
 
 const MIN_WIDTH = 1000;
 const MIN_HEIGHT = 700;
+
+// Dynamic import for Sharp to handle Windows compatibility issues
+async function getSharp() {
+  try {
+    // @ts-expect-error - Sharp may not be available
+    const sharp = await import('sharp');
+    return sharp.default;
+  } catch {
+    console.warn(pc.yellow('Sharp module not available. Image enhancement will be skipped.'));
+    return null;
+  }
+}
+
 export async function enhanceImage(filename) {
   const localPath = path.resolve(path.join(process.cwd(), 'public', filename));
   try {
+    const sharp = await getSharp();
+    if (!sharp) {
+      console.log(pc.yellow(`-->> Sharp unavailable. Returning original image: ${filename}`));
+      return filename;
+    }
+
     const metadata = await sharp(localPath).metadata();
     console.log(`-->> Image Width ${metadata.width} | Width ${metadata.height} `);
     if (metadata.width <= 400) {
