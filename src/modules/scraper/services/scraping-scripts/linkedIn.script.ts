@@ -1,17 +1,30 @@
 /* eslint-disable prettier/prettier */
 import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
 import { ArticleType } from 'src/models/articles.models';
+import { isAllowedLinkedInCompany } from '../scraping-config/target-sources.config';
+
+const env_vars = {
+  LINKEDIN_EMAIL: process.env.LINKEDIN_EMAIL || 'TO REPLACE',
+  LINKEDIN_PASSWORD: process.env.LINKEDIN_PASSWORD || 'TO REPLACE',
+};
 
 //**/ NOTE: "linkedIn POST" SCRAPPING SCRIPT
 export async function getAllLinkedInArticles(companyName: string) {
+  // Validate if company is in approved list
+  if (!isAllowedLinkedInCompany(companyName)) {
+    console.warn(`⚠️  LinkedIn company '${companyName}' is not in the approved list. Skipping scraping.`);
+    return [];
+  }
+
+  console.log(`✅ LinkedIn company '${companyName}' is approved. Starting scraping...`);
   const { browser, page } = await getPuppeteerInstance();
 
   // Navigate to LinkedIn login page
   await page.goto(`https://www.linkedin.com/company/${companyName}/posts/`, { waitUntil: 'networkidle2' });
 
-  // Type in username and password
-  await page.type('#username', 'yourdream1991@gmail.com', { delay: 100 });
-  await page.type('#password', 'Sjymx361*', { delay: 100 });
+  // Type in email and password
+  await page.type('#username', env_vars['LINKEDIN_EMAIL'], { delay: 100 });
+  await page.type('#password', env_vars['LINKEDIN_PASSWORD'], { delay: 100 });
 
   // Click on the login button
   await page.click('button[type="submit"]');

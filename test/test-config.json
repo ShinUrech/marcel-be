@@ -1,0 +1,112 @@
+{
+  "name": "Project Marcel Test Suite",
+  "description": "Comprehensive testing configuration for Marcel Backend",
+  "version": "1.0.0",
+  "tests": {
+    "unit": {
+      "description": "Unit tests for individual components",
+      "command": "npm run test:unit",
+      "files": [
+        "test/unit/*.spec.ts",
+        "test/unit/**/*.spec.ts"
+      ],
+      "status": "partial - TypeScript issues with Jest types"
+    },
+    "integration": {
+      "description": "Integration tests between components",
+      "command": "node test/integration/integration.test.js",
+      "files": [
+        "test/integration/integration.test.js"
+      ],
+      "status": "ready"
+    },
+    "e2e": {
+      "description": "End-to-end API testing",
+      "command": "npm run test:e2e",
+      "files": [
+        "test/e2e/api.e2e.spec.js"
+      ],
+      "status": "ready"
+    },
+    "system": {
+      "description": "System health and connectivity tests",
+      "command": "node test/system-test-runner.js",
+      "files": [
+        "test/system-test-runner.js"
+      ],
+      "status": "ready"
+    }
+  },
+  "requirements": {
+    "database": "MongoDB running on mongodb://localhost:27017",
+    "server": "NestJS backend running on http://localhost:3001",
+    "environment": {
+      "NODE_ENV": "test",
+      "DATABASE_URL": "mongodb://localhost:27017/marcel-test",
+      "PORT": "3001"
+    },
+    "optional": {
+      "OPENAI_API_KEY": "Required for content generation tests",
+      "OPENAI_MODEL": "gpt-4"
+    }
+  },
+  "testScenarios": {
+    "healthCheck": {
+      "description": "Basic system health verification",
+      "tests": [
+        "Database connectivity",
+        "Server responsiveness",
+        "Critical endpoints availability"
+      ]
+    },
+    "scraperWorkflow": {
+      "description": "Web scraping functionality",
+      "tests": [
+        "Scraper service initialization",
+        "Website connectivity",
+        "Data extraction and parsing",
+        "Image download functionality",
+        "Date formatting utilities"
+      ]
+    },
+    "articlesAPI": {
+      "description": "Articles CRUD operations",
+      "tests": [
+        "Fetch all articles",
+        "Filter by content type",
+        "Search functionality",
+        "Article creation/update",
+        "Data validation"
+      ]
+    },
+    "contentGeneration": {
+      "description": "AI-powered content enhancement",
+      "tests": [
+        "OpenAI integration",
+        "Content generation",
+        "Teaser creation",
+        "Image context analysis"
+      ]
+    }
+  },
+  "troubleshooting": {
+    "common_issues": {
+      "database_connection": {
+        "error": "MongooseError: Connection failed",
+        "solution": "Ensure MongoDB is running: mongod --dbpath /path/to/db"
+      },
+      "server_not_running": {
+        "error": "ECONNREFUSED localhost:3001",
+        "solution": "Start the backend: npm run start:dev"
+      },
+      "jest_types": {
+        "error": "Cannot find module '@types/jest'",
+        "solution": "Install types: npm install --save-dev @types/jest"
+      },
+      "openai_key": {
+        "error": "OpenAI API key not provided",
+        "solution": "Set OPENAI_API_KEY environment variable"
+      }
+    }
+  }
+}
