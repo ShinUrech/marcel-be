@@ -2,25 +2,18 @@
 
 /**
  * Test Runner Script for Project Marcel Backend
- *
- * This script provides a comprehensive testing suite that verifies:
- * 1. Database connectivity and basic operations
- * 2. API endpoints functionality
- * 3. Service layer operations
- * 4. Environment configuration
- *
- * Run with: npm run test:system
+ * Updated to use .env.development
  */
 
-// Load environment variables from .env file
-require('dotenv').config();
+// Load environment variables from .env.development
+require('dotenv').config({ path: '.env.development' });
 
 const axios = require('axios');
 const { MongoClient } = require('mongodb');
 
 class SystemTestRunner {
   constructor() {
-    this.baseUrl = 'http://localhost:5000/api';
+    this.baseUrl = process.env.BASE_URL || 'http://localhost:3000/api';
     this.mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/practicedb';
     this.results = {
       passed: 0,
@@ -101,7 +94,7 @@ class SystemTestRunner {
 
   async testEnvironmentConfig() {
     const requiredVars = ['MONGO_URI'];
-    const optionalVars = ['OPENAI_API_KEY', 'NODE_ENV'];
+    const optionalVars = ['OPENAI_API_KEY', 'CHATGPT_API_KEY', 'NODE_ENV'];
 
     for (const envVar of requiredVars) {
       if (!process.env[envVar]) {
@@ -168,7 +161,7 @@ class SystemTestRunner {
   }
 
   async testContentGeneratorEndpoints() {
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.OPENAI_API_KEY && !process.env.CHATGPT_API_KEY) {
       this.log('Skipping content generator tests - No OpenAI API key configured', 'warning');
       return;
     }
@@ -287,7 +280,7 @@ class SystemTestRunner {
 
     this.log('\nRECOMMendations:', 'info');
 
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.OPENAI_API_KEY && !process.env.CHATGPT_API_KEY) {
       this.log('• Set OPENAI_API_KEY to test AI content generation features', 'warning');
     }
 
