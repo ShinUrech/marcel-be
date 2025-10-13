@@ -9,7 +9,7 @@
     "node": "> 18.12.0",
     "npm": "> 6.0"
   },
- "scripts": {
+  "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -22,14 +22,12 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    
     "test:all": "node test/run-all-tests.js",
     "test:system": "node test/system-test-runner.js",
     "test:integration": "node test/integration/integration.test.js",
     "test:scrapers": "node test/scrapers/scraper-test-suite.js",
     "test:scraper": "node test/scrapers/quick-scraper-test.js",
     "test:validate": "node test/scrapers/scraper-validator.js",
-    
     "prepare": "husky"
   },
   "dependencies": {
@@ -47,6 +45,7 @@
     "cross-env": "^7.0.3",
     "dotenv": "^17.2.2",
     "envalid": "^8.0.0",
+    "git-filter-repo": "^0.0.30",
     "image-size": "^2.0.2",
     "jsdom": "^26.0.0",
     "mongoose": "^8.10.0",
