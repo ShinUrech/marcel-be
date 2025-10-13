@@ -13,6 +13,7 @@ async function bootstrap() {
 
   // Enable Cors
   app.enableCors();
+  app.setGlobalPrefix('api');
 
   // Getting the Winston logger
   const logger = app.get(WINSTON_MODULE_NEST_PROVIDER);

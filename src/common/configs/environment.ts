@@ -1,13 +1,21 @@
-/* eslint-disable prettier/prettier */
 import { cleanEnv, port, str } from 'envalid';
 
 export default () => {
+  const isTest = process.env.NODE_ENV === 'test';
+
   const environment = cleanEnv(process.env, {
-    NODE_ENV: str({ choices: ['development', 'test', 'production', 'staging'] }),
-    PORT: port(),
-    MONGO_URI: str(),
-    APP_NAME: str(),
-    CHATGPT_API_KEY: str(),
+    NODE_ENV: str({
+      choices: ['development', 'test', 'production', 'staging'],
+      default: 'development',
+    }),
+    PORT: port({ default: 3000 }),
+    MONGO_URI: str({
+      default: isTest ? 'mongodb://localhost:27017/test' : undefined,
+    }),
+    APP_NAME: str({ default: 'Marcel_Backend' }),
+    CHATGPT_API_KEY: str({
+      default: isTest ? 'test-key-not-used' : undefined,
+    }),
   });
 
   return {

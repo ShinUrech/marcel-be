@@ -1,3 +1,6 @@
+// Add this as the FIRST line in the file
+require('dotenv').config({ path: '.env.development' });
+
 /**
  * Integration Tests for Project Marcel Backend
  * These tests verify that the main components work together correctly
@@ -8,8 +11,8 @@ const { MongoClient } = require('mongodb');
 
 class IntegrationTests {
   constructor() {
-    this.baseUrl = process.env.TEST_BASE_URL || 'http://localhost:3000';
-    this.mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/practicedb';
+    this.baseUrl = process.env.TEST_BASE_URL || 'http://localhost:3000/api'; // Add /api
+    this.mongoUri = process.env.MONGO_URI; // Remove the localhost fallback
   }
 
   async testDatabaseOperations() {
@@ -192,7 +195,10 @@ class IntegrationTests {
 
       // 2. Retrieve via API
       const apiResponse = await axios.get(`${this.baseUrl}/articles`);
-      const foundInAPI = apiResponse.data.find((article) => article._id === insertResult.insertedId.toString());
+
+      // FIX: Access the nested data array
+      const articlesArray = apiResponse.data.data || apiResponse.data;
+      const foundInAPI = articlesArray.find((article) => article._id === insertResult.insertedId.toString());
 
       if (foundInAPI) {
         console.log('✓ Article accessible via API');
@@ -213,7 +219,6 @@ class IntegrationTests {
 
     console.log('✓ Full workflow integration test completed');
   }
-
   async runAllTests() {
     console.log('='.repeat(60));
     console.log('MARCEL BACKEND - INTEGRATION TESTS');
