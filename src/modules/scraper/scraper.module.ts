@@ -7,7 +7,7 @@ import { ScraperDeeperService } from './services/scraper-deeper.service';
 import { ArticlesService } from './services/articles.service';
 import { TasksService } from './services/tasks.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Article, ArticleSchema } from 'src/models/articles.models';
+import { Article, ArticleSchema } from '../../models/articles.models';
 
 @Module({
   controllers: [ScraperController, TasksController],

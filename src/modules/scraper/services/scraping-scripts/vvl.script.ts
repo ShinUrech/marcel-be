@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
-import { ArticleType } from 'src/models/articles.models';
+import { getPuppeteerInstance } from '../../../../common/utils/puppeteer-instance';
+import { ArticleType } from '../../../../models/articles.models';
 
 //**/ NOTE: "vvl.ch/" SCRAPPING SCRIPT
 //! NOTE : COMPLETED

@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ArticleType } from 'src/models/articles.models';
+import { ArticleType } from '../../../models/articles.models';
 
 export class CreateArticleDto {
   @IsNotEmpty()

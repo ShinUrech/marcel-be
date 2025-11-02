@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
-import { ArticleType } from 'src/models/articles.models';
+import { getPuppeteerInstance } from '../../../../common/utils/puppeteer-instance';
+import { ArticleType } from '../../../../models/articles.models';
 import { isAllowedYouTubeChannel } from '../scraping-config/target-sources.config';
 
 //**/ NOTE: YOUTUBE CHANEL SCRAPPING SCRIPT

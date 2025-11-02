@@ -2,13 +2,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Article, ArticleDocument, ArticleType } from 'src/models/articles.models';
+import { Article, ArticleDocument, ArticleType } from '../../../models/articles.models';
 import { CreateArticleDto } from '../dtos/create-article.dto';
-import { formatDate, parseRelativeDate, parseRelativeDateLinkedIn } from 'src/common/utils/format-date';
+import { formatDate, parseRelativeDate, parseRelativeDateLinkedIn } from '../../../common/utils/format-date';
 import { nanoid } from 'nanoid';
-import { formatHtmlLinkedIn } from 'src/common/utils/format-html';
-import { enhanceImage } from 'src/common/utils/enhance-image';
-import { downloadImage } from 'src/common/helpers/download-image';
+import { formatHtmlLinkedIn } from '../../../common/utils/format-html';
+import { enhanceImage } from '../../../common/utils/enhance-image';
+import { downloadImage } from '../../../common/helpers/download-image';
 
 @Injectable()
 export class ArticlesService {

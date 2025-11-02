@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Article, ArticleDocument, ArticleType } from 'src/models/articles.models';
+import { Article, ArticleDocument, ArticleType } from '../../../models/articles.models';
 import { PaginationDto } from '../dtos/pagination.dto';
 import { SearchArticleDto } from '../dtos/search-article.dto';
 import { join } from 'path';

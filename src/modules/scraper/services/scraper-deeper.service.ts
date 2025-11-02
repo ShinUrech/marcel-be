@@ -34,7 +34,21 @@ import { getSobArticle } from './scraping-scripts/sob.script';
 @Injectable()
 export class ScraperDeeperService {
   private async getPuppeteerInstance(cookie = []) {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ 
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--disable-gpu',
+        '--disable-software-rasterizer',
+        '--disable-extensions',
+        '--disable-background-networking',
+        '--disable-background-timer-throttling',
+        '--disable-renderer-backgrounding',
+      ]
+    });
     if (cookie.length) {
       browser.setCookie(...cookie);
     }

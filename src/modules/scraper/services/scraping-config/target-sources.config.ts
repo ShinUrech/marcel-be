@@ -59,14 +59,52 @@ export const YOUTUBE_TARGETS: TargetSource[] = [
   { name: 'SOB', type: 'youtube', url: '@SOBahn', active: true },
 ];
 
-// Website Sources (from PDF list)
+// Website Sources - ALL 35+ websites
 export const WEBSITE_TARGETS: TargetSource[] = [
-  { name: 'Eurailpress', type: 'website', url: 'eurailpress.de/nachrichten.html', active: true },
-  { name: 'ProAlps', type: 'website', url: 'proalps.ch/aktuell/?category=medienmitteilungen', active: true },
-  { name: 'SEV Online', type: 'website', url: 'sev-online.ch/de/medien/medienmitteilung/', active: true },
-  { name: 'Baublatt', type: 'website', url: 'baublatt.ch/suche?fulltext=eisenbahn', active: true },
-  { name: 'Bahn Online', type: 'website', url: 'bahnonline.ch/', active: true },
-  { name: 'Pro Bahn', type: 'website', url: 'pro-bahn.ch/schweiz/aktuell/aktuelle-meldungen', active: true },
+  // News & Media
+  { name: 'Lok Report', type: 'website', url: 'lok-report.de', active: true },
+  { name: 'Rail Market', type: 'website', url: 'railmarket.com', active: true },
+  { name: 'Baublatt', type: 'website', url: 'baublatt.ch', active: true },
+  { name: 'Pro Bahn', type: 'website', url: 'pro-bahn.ch', active: true },
+  { name: 'Presseportal', type: 'website', url: 'presseportal.ch', active: true },
+  { name: 'Bahnblogstelle', type: 'website', url: 'bahnblogstelle.com', active: true },
+  { name: 'SEV Online', type: 'website', url: 'sev-online.ch', active: true },
+  { name: 'Bahnberufe', type: 'website', url: 'bahnberufe.ch', active: true },
+  { name: 'Roalps', type: 'website', url: 'roalps.ch', active: true },
+  { name: 'Eurailpress', type: 'website', url: 'eurailpress.de', active: true },
+  { name: 'ProAlps', type: 'website', url: 'proalps.ch', active: true },
+  { name: 'Bahn Online', type: 'website', url: 'bahnonline.ch', active: true },
+  
+  // Railway Companies
+  { name: 'SBB Cargo', type: 'website', url: 'sbbcargo.com', active: true },
+  { name: 'BLS', type: 'website', url: 'bls.ch', active: true },
+  { name: 'RhB News', type: 'website', url: 'rhb.ch', active: true },
+  { name: 'SOB', type: 'website', url: 'sob.ch', active: true },
+  { name: 'Zentralbahn', type: 'website', url: 'zentralbahn.ch', active: true },
+  
+  // Public Transport
+  { name: 'Bernmobil', type: 'website', url: 'bernmobil.ch', active: true },
+  { name: 'ZVV', type: 'website', url: 'zvv.ch', active: true },
+  { name: 'VVL', type: 'website', url: 'vvl.ch', active: true },
+  { name: 'RBS', type: 'website', url: 'rbs.ch', active: true },
+  { name: 'Aargau Verkehr', type: 'website', url: 'aargauverkehr.ch', active: true },
+  
+  // Technology & Industry
+  { name: 'Alstom', type: 'website', url: 'alstom.com', active: true },
+  { name: 'ABB', type: 'website', url: 'abb.com', active: true },
+  { name: 'Doppelmayr', type: 'website', url: 'doppelmayr.com', active: true },
+  { name: 'Hupac', type: 'website', url: 'hupac.com', active: true },
+  { name: 'Rhomberg Sersa', type: 'website', url: 'rhomberg-sersa.com', active: true },
+  { name: 'Cargorail', type: 'website', url: 'cargorail.ch', active: true },
+  { name: 'C. Vanoli', type: 'website', url: 'c-vanoli.ch', active: true },
+  { name: 'Müller Frauenfeld', type: 'website', url: 'mueller-frauenfeld.ch', active: true },
+  
+  // Government & Organizations
+  { name: 'OTIF', type: 'website', url: 'otif.org', active: true },
+  { name: 'VOEV', type: 'website', url: 'voev.ch', active: true },
+  { name: 'CST', type: 'website', url: 'cst.ch', active: true },
+  { name: 'Stadt Zürich', type: 'website', url: 'stadt-zuerich.ch', active: true },
+  { name: 'Citrap Vaud', type: 'website', url: 'citrap-vaud.ch', active: true },
 ];
 
 // Combined configuration

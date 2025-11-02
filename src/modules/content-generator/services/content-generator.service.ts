@@ -3,15 +3,15 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import OpenAI from 'openai';
-import { formatHtmlVideo } from 'src/common/utils/format-html';
-import { getInnerBody } from 'src/common/utils/get-inner-body';
-import { ArticlesService } from 'src/modules/scraper/services/articles.service';
+import { formatHtmlVideo } from '../../../common/utils/format-html';
+import { getInnerBody } from '../../../common/utils/get-inner-body';
+import { ArticlesService } from '../../scraper/services/articles.service';
 // import { imageSize } from 'image-size';
 // import * as path from 'path';
 // import { readFileSync } from 'fs';
-// import { isLargeImg } from 'src/common/utils/enhance-image';
-import getImage from 'src/common/helpers/search-image-google';
-import { downloadImage } from 'src/common/helpers/download-image';
+// import { isLargeImg } from '../../../common/utils/enhance-image';
+import getImage from '../../../common/helpers/search-image-google';
+import { downloadImage } from '../../../common/helpers/download-image';
 @Injectable()
 export class ContentGeneratorService {
   constructor(

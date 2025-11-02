@@ -3,8 +3,8 @@ import { Controller, Get, Param, Query, Response, UsePipes, ValidationPipe } fro
 import { PaginationDto } from '../dtos/pagination.dto';
 import { ArticlesService } from '../services/articles.service';
 import { SearchArticleDto } from '../dtos/search-article.dto';
-import { parseRelativeDateLinkedIn } from 'src/common/utils/format-date';
-import { ArticleType } from 'src/models/articles.models';
+import { parseRelativeDateLinkedIn } from '../../../common/utils/format-date';
+import { ArticleType } from '../../../models/articles.models';
 
 @Controller('articles')
 export class ArticlesController {

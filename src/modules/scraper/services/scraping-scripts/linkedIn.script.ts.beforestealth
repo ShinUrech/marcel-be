@@ -1,0 +1,133 @@
+/* eslint-disable prettier/prettier */
+import { getPuppeteerInstance } from '../../../../common/utils/puppeteer-instance';
+import { ArticleType } from '../../../../models/articles.models';
+import { isAllowedLinkedInCompany } from '../scraping-config/target-sources.config';
+
+const env_vars = {
+  LINKEDIN_EMAIL: process.env.LINKEDIN_EMAIL || 'TO REPLACE',
+  LINKEDIN_PASSWORD: process.env.LINKEDIN_PASSWORD || 'TO REPLACE',
+};
+
+//**/ NOTE: "linkedIn POST" SCRAPPING SCRIPT
+export async function getAllLinkedInArticles(companyName: string) {
+  // Validate if company is in approved list
+  if (!isAllowedLinkedInCompany(companyName)) {
+    console.warn(`⚠️  LinkedIn company '${companyName}' is not in the approved list. Skipping scraping.`);
+    return [];
+  }
+
+  console.log(`✅ LinkedIn company '${companyName}' is approved. Starting scraping...`);
+  const { browser, page } = await getPuppeteerInstance();
+
+  try {
+    // Navigate to LinkedIn login page first
+    console.log('📍 Navigating to LinkedIn login page...');
+    await page.goto('https://www.linkedin.com/login', { waitUntil: 'networkidle2', timeout: 60000 });
+
+    // Wait for login form and type credentials
+    console.log('🔐 Entering credentials...');
+    await page.waitForSelector('input[name="session_key"]', { timeout: 10000 });
+    await page.type('input[name="session_key"]', env_vars['LINKEDIN_EMAIL'], { delay: 100 });
+    await page.type('input[name="session_password"]', env_vars['LINKEDIN_PASSWORD'], { delay: 100 });
+
+    // Click on the login button
+    console.log('🔘 Clicking login button...');
+    await page.click('button[type="submit"]');
+
+    // Wait for navigation to complete
+    await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 180000 });
+
+    const currentUrl = page.url();
+    console.log(`   Current URL after login: ${currentUrl}`);
+
+    // Check if login was successful
+    if (currentUrl.includes('/login') || currentUrl.includes('/checkpoint')) {
+      throw new Error('Login failed - still on login/checkpoint page. Check credentials or account may need verification.');
+    }
+
+    console.log('✅ Login successful!');
+
+    // Navigate to company posts page
+    console.log(`📍 Navigating to company posts: ${companyName}...`);
+    await page.goto(`https://www.linkedin.com/company/${companyName}/posts/`, { 
+      waitUntil: 'networkidle2',
+      timeout: 180000 
+    });
+
+    // Scroll to load more posts
+    console.log('📜 Scrolling to load posts...');
+    let prevHeight = 0;
+    let scrollAttempts = 0;
+    const maxScrollAttempts = 10;
+
+    while (scrollAttempts < maxScrollAttempts) {
+      const newHeight = (await page.evaluate('document.documentElement.scrollHeight')) as number;
+      if (newHeight === prevHeight) break;
+      await page.evaluate('window.scrollTo(0, document.documentElement.scrollHeight)');
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      prevHeight = newHeight;
+      scrollAttempts++;
+
+      if (prevHeight > 20000) break;
+    }
+
+    console.log(`   Scrolled ${scrollAttempts} times`);
+
+    // Scrape posts
+    console.log('🔍 Scraping posts...');
+    const posts = await page.evaluate(
+      (articleType, companyName) => {
+        const postElements = document.querySelectorAll('.feed-shared-update-v2'); // Selects posts
+        return Array.from(postElements).map((post) => {
+          const textElement = post.querySelector('.feed-shared-update-v2__description') as HTMLElement;
+          const imgElement =
+            post.querySelector('img.update-components-article__image') ||
+            post.querySelector('img.update-components-image__image');
+
+          const companyImgElement = post.querySelector('img');
+
+          const dateElement = post.querySelector('.update-components-actor__sub-description > span') as HTMLElement;
+          return {
+            baseUrl: window.location.href,
+            type: articleType,
+            dateText: dateElement
+              ? dateElement.innerText
+                  .replace(/\•/g, '')
+                  .replace(/\Modifié/g, '')
+                  .trim()
+              : 'N/A',
+            originalContent: textElement ? textElement.innerHTML.trim() : 'N/A',
+            image: imgElement ? imgElement?.getAttribute('src') : 'N/A',
+            metadata: {
+              icon: companyImgElement ? companyImgElement?.getAttribute('src') : 'N/A',
+              source: companyName,
+            },
+          };
+        });
+      },
+      ArticleType.LinkedIn,
+      companyName,
+    );
+
+    console.log(`✅ Successfully scraped ${posts.length} posts`);
+
+    await browser.close();
+
+    return posts;
+
+  } catch (error) {
+    console.error('❌ LinkedIn scraping failed:', error.message);
+    
+    // Take screenshot for debugging
+    try {
+      await page.screenshot({ path: `/tmp/linkedin-error-${Date.now()}.png` });
+      console.log('📸 Error screenshot saved to /tmp/');
+    } catch (screenshotError) {
+      console.error('   Could not save screenshot');
+    }
+
+    await browser.close();
+    throw error;
+  }
+}
+

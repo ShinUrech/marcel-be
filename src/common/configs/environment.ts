@@ -16,6 +16,16 @@ export default () => {
     CHATGPT_API_KEY: str({
       default: isTest ? 'test-key-not-used' : undefined,
     }),
+    LINKEDIN_EMAIL: str({
+      default: isTest ? 'a7195031@gmail.com' : undefined,
+    }),
+    LINKEDIN_PASSWORD: str({
+      default: isTest ? 'Mutsumi8139' : undefined,
+    }),
+    LINKEDIN_HEADLESS: str({
+      choices: ['true', 'false'],
+      default: 'true',
+    }),
   });
 
   return {
@@ -24,5 +34,8 @@ export default () => {
     appName: environment.APP_NAME,
     databaseUri: environment.MONGO_URI,
     chatGPT: environment.CHATGPT_API_KEY,
+    linkedInEmail: environment.LINKEDIN_EMAIL,
+    linkedInPassword: environment.LINKEDIN_PASSWORD,
+    linkedInHeadless: environment.LINKEDIN_HEADLESS === 'true',
   };
 };

@@ -1,0 +1,30 @@
+/* eslint-disable prettier/prettier */
+import puppeteer from 'puppeteer';
+
+export const getPuppeteerInstance = async (cookie = []) => {
+  const browser = await puppeteer.launch({
+    headless: false,
+    executablePath: '/usr/bin/google-chrome-stable',
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--no-zygote',
+      '--single-process',
+      '--disable-software-rasterizer',
+    ],
+  });
+  
+  if (cookie.length) {
+    const page = await browser.newPage();
+    await page.setCookie(...cookie);
+    await page.close();
+  }
+  
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1920, height: 1080 });
+  
+  return { browser, page };
+};
+

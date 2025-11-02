@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { getPuppeteerInstance } from 'src/common/utils/puppeteer-instance';
+import { getPuppeteerInstance } from '../../../../common/utils/puppeteer-instance';
 
 export async function searchBetterImage(imagePath) {
   const { browser, page } = await getPuppeteerInstance();

@@ -3,7 +3,7 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { ScraperService } from '../services/scraper.service';
 import { ScraperDeeperService } from '../services/scraper-deeper.service';
 import { ArticlesService } from '../services/articles.service';
-import { ArticleType } from 'src/models/articles.models';
+import { ArticleType } from '../../../models/articles.models';
 
 @Controller('scraper')
 export class ScraperController {
